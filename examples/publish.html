@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Publish example</title>
+  </head>
+  <body>
+    <video style="background-color:black" width="640" height="480" muted="muted"></video>
+    <br/>
+    <button type="button" id="play" onclick="_play()">Play</button>
+    <button type="button" id="publish" onclick="_publish()" style="display:none">Publish</button>
+    <button type="button" id="stop" onclick="_stop()" style="display:none">Stop</button>
+    <span id="state"></span><span id="status"></span>
+  </body>
+  <script type="module">
+    import { WowzaWebRTCPlayer } from '../dist/esm/wowza-webrtc-player.js';
+
+    const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
+      sdpUrl: 'wss://5e15f1c3875a4.streamlock.net/webrtc-session.json',
+      applicationName: 'live',
+      streamName: 'myStream'
+    });
+
+    window.player = player;
+
+    const hide = (id) => document.getElementById(id).style.display = 'none';
+    const show = (id) => document.getElementById(id).style.display = '';
+    const setState = (state) => document.getElementById('state').textContent = state;
+
+    window._play = async function () {
+      setState('playing...');
+
+      try {
+        await player.playLocal();
+        show('publish');
+        hide('play');
+        setState('');
+      } catch (e) {
+        setState(e.message);
+      }
+    };
+
+    window._publish = async function () {
+      setState('Publishing...');
+
+      try {
+        const p = player.publish();
+        const pc = player.getPeerConnection();
+
+        pc.oniceconnectionstatechange = () => {
+          document.getElementById('status').textContent = ' - ' + pc.iceConnectionState;
+        };
+
+        await p;
+
+        hide('publish');
+        show('stop');
+      } catch (e) {
+        setState(e.message || e.statusDescription || e);
+      }
+    }
+
+    window._stop = function () {
+      hide('stop');
+      show('publish');
+      setState('');
+
+      player.stop();
+    }
+
+    _play();
+  </script>
+</html>

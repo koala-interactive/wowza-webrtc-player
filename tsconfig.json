@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "src/*"]
+    },
+    "lib": ["dom"],
+  },
+  "exclude": ["node_modules", "dist"],
+  "types": ["typings", "node"]
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Play HLS example</title>
+    <link href="//vjs.zencdn.net/7.3.0/video-js.min.css" rel="stylesheet">
+    <script src="//vjs.zencdn.net/7.3.0/video.min.js"></script>
+  </head>
+  <body>
+    <video
+      id="my-player"
+      class="video-js"
+      controls
+      preload="auto"
+      data-setup='{}'
+      style="background-color:black"
+      width="640"
+      height="480">
+      <source src="https://5e15f1c3875a4.streamlock.net/live/myStream_aac/playlist.m3u8" type="application/x-mpegURL"></source>
+      <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a
+        web browser that
+        <a href="https://videojs.com/html5-video-support/" target="_blank">
+          supports HTML5 video
+        </a>
+      </p>
+    </video>
+  </body>
+</html>

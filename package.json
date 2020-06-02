@@ -1,0 +1,54 @@
+{
+  "name": "wowza-webrtc-player",
+  "version": "0.0.1",
+  "description": "A generic player to handle Wowza WebRTC api",
+  "author": "Vincent Thibault <vthibault.mobile@gmail.com>",
+  "license": "MIT",
+  "main": "./dist/cjs/wowza-webrtc-player.js",
+  "module": "./dist/esm/wowza-webrtc-player.js",
+  "browser": {
+    "./dist/cjs/wowza-webrtc-player.js": "./dist/umd/wowza-webrtc-player.js"
+  },
+  "files": [
+    "dist/",
+    "index.d.ts"
+  ],
+  "bugs": {
+    "url": "https://github.com/koala-interactive/wowza-webrtc-player/issues"
+  },
+  "repository": "github:koala-interactive/wowza-webrtc-player",
+  "scripts": {
+    "lint": "tsc --noEmit && eslint . --ext .ts",
+    "build": "del dist && npm run update-license && rollup -c && npm run update-filesize",
+    "update-license": "node utils/update-license.js",
+    "update-filesize": "node utils/update-size.js"
+  },
+  "keywords": [
+    "wowza",
+    "webrtc",
+    "player",
+    "streaming"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
+    "@babel/preset-env": "^7.7.5",
+    "@babel/preset-typescript": "^7.7.4",
+    "@babel/register": "^7.7.4",
+    "@types/node": "^13.1.1",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "del-cli": "^1.1.0",
+    "eslint": "^6.7.2",
+    "rollup": "^1.27.13",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-size-snapshot": "^0.10.0",
+    "rollup-plugin-terser": "^5.1.3",
+    "typescript": "^3.7.3"
+  }
+}

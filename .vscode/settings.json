@@ -1,0 +1,23 @@
+{
+  "editor.tabSize": 2,
+  "git.ignoreLimitWarning": true,
+  "git.ignoreMissingGitWarning": true,
+  "git.enabled": true,
+  "git.autorefresh": false,
+  "files.exclude": {
+    "**/._.DS_Store": true,
+    "**/.atom": true,
+    "**/.vscode": true,
+    "**/build": true,
+    "**/node_modules": true
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.validate": ["typescript"],
+}
