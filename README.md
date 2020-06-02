@@ -7,10 +7,11 @@ Easy to use WebRTC Player library to connect to Wowza protocol.
 - Ensure it's ready as a NPM package.
 - Add a method to customize sdp enhancers
 - Add documentation about `player.getAvailableStreams()`.
+- Add documentation about settings (`constraints`, `videoConfigs`, `audioConfigs`, `userData`, `iceServices`)
 - Fixes various bugs
 - Find a way to detect wowza disconnection
 - Find a way to work with deprecated DOM methods using Typescript
-
+- Update examples to be able to insert `sdpUrl`, `applicationName` and `streamName`.
 
 ## Base code
 ```ts
