@@ -10,9 +10,9 @@
     <button type="button" id="stop" onclick="_pause()" style="display:none">Stop</button>
     <span id="state"></span>
   </body>
-  <script type="module">
-    import { WowzaWebRTCPlayer } from '../dist/esm/wowza-webrtc-player.js';
-
+  <script src="../dist/umd/wowza-webrtc-player.js"></script>
+  <script>
+    const { WowzaWebRTCPlayer } = window['wowza-webrtc-player'];
     const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
       sdpUrl: 'wss://5e15f1c3875a4.streamlock.net/webrtc-session.json',
       applicationName: 'live',

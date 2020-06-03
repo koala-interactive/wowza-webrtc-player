@@ -11,8 +11,9 @@
     <button type="button" id="stop" onclick="_stop()" style="display:none">Stop</button>
     <span id="state"></span><span id="status"></span>
   </body>
-  <script type="module">
-    import { WowzaWebRTCPlayer } from '../dist/esm/wowza-webrtc-player.js';
+  <script src="../dist/umd/wowza-webrtc-player.js"></script>
+  <script>
+    const { WowzaWebRTCPlayer } = window['wowza-webrtc-player'];
 
     const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
       sdpUrl: 'wss://5e15f1c3875a4.streamlock.net/webrtc-session.json',
@@ -35,7 +36,7 @@
         hide('play');
         setState('');
       } catch (e) {
-        setState(e.message);
+        setState('Failure: ' + e);
       }
     };
 
@@ -55,7 +56,7 @@
         hide('publish');
         show('stop');
       } catch (e) {
-        setState(e.message || e.statusDescription || e);
+        setState('Failure: ' + (e.message || e.statusDescription || e));
       }
     }
 
