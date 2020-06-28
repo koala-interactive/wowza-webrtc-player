@@ -1,5 +1,11 @@
+// Code adapted from https://github.com/WowzaMediaSystems/webrtc-examples/blob/master/src/lib/WowzaMungeSDP.js
+import { browser } from '../utils/browser';
+
 const SUPPORTED_VIDEO_FORMATS = ['vp9', 'vp8', 'h264', 'red', 'ulpfec', 'rtx'];
 const SUPPORTED_AUDIO_FORMATS = ['opus', 'isac', 'g722', 'pcmu', 'pcma', 'cn'];
+
+type TSection = 'm=audio' | 'm=video' | null;
+type TCodecConfig = TVideoConfigs | TAudioConfigs | null;
 
 export class SDPEnhancer {
   private audioIndex = -1;
@@ -14,113 +20,84 @@ export class SDPEnhancer {
     description: RTCSessionDescriptionInit
   ): RTCSessionDescriptionInit {
     const lines = this.prepareSDP(description);
+    const video = this.videoOptions;
+    const audio = this.audioOptions;
 
-    let sdpSection = 'header';
-    let hitMID = false;
+    let sdpSection: TSection = null;
+
+    const getSectionConfig = (): TCodecConfig =>
+      sdpSection === 'm=audio'
+        ? audio
+        : sdpSection === 'm=video'
+        ? video
+        : null;
 
     const sdp =
       lines
         .filter(Boolean)
         .map(line => {
-          if (line.startsWith('m=audio')) {
-            if (this.audioIndex !== -1) {
-              return line
-                .split(' ')
-                .slice(0, 3)
-                .concat(this.audioIndex.toString())
-                .join(' ');
+          const [header] = line.split(/\s|:/, 1);
+
+          switch (header) {
+            case 'm=audio':
+            case 'm=video': {
+              const offset =
+                header === 'm=audio' ? this.audioIndex : this.videoIndex;
+
+              if (offset !== -1 && browser === 'chrome') {
+                const [header, port, proto /*, fmt*/] = line.split(' ');
+                return `${header} ${port} ${proto} ${offset}`;
+              }
+
+              sdpSection = header;
+              break;
             }
 
-            sdpSection = 'audio';
-            hitMID = false;
-            return line;
-          }
-
-          if (line.startsWith('m=video')) {
-            if (this.videoIndex !== -1) {
-              return line
-                .split(' ')
-                .slice(0, 3)
-                .concat(this.videoIndex.toString())
-                .join(' ');
-            }
-
-            sdpSection = 'video';
-            hitMID = false;
-            return line;
-          }
-
-          if (line.startsWith('a=rtpmap')) {
-            sdpSection = 'bandwidth';
-            hitMID = false;
-          }
-
-          if (
-            hitMID ||
-            (!line.startsWith('a=mid:') && !line.startsWith('a=rtpmap'))
-          ) {
-            return line;
-          }
-
-          switch (sdpSection) {
-            case 'audio':
-              hitMID = true;
-              return (
-                line +
-                (this.audioOptions.bitRate
-                  ? `\r\nb=CT:${this.audioOptions.bitRate}\r\nb=AS:${this.audioOptions.bitRate}`
-                  : '')
-              );
-
-            case 'video':
-              hitMID = true;
-              return (
-                line +
-                (this.videoOptions.bitRate
-                  ? `\r\nb=CT:${this.videoOptions.bitRate}\r\nb=AS:${
-                      this.videoOptions.bitRate
-                    }${
-                      this.videoOptions.frameRate
-                        ? `\r\na=framerate:${this.videoOptions.frameRate.toFixed(
-                            2
-                          )}`
-                        : ''
-                    }`
-                  : '')
-              );
-
-            case 'bandwidth': {
-              const rtpmapID = /^a=rtpmap:(\d+)\s(\w+)\/(\d+)/.exec(line);
-              if (rtpmapID == null) {
+            case 'a=rtpmap': {
+              const matches = /^a=rtpmap:(\d+)\s+(\w+)\/(\d+)/.exec(line);
+              if (!matches || browser !== 'chrome') {
                 break;
               }
 
-              const match = rtpmapID[2].toLowerCase();
+              const format = matches[2].toLowerCase();
 
-              if (
-                this.videoOptions.bitRate &&
-                SUPPORTED_VIDEO_FORMATS.includes(match)
-              ) {
-                line +=
-                  '\r\na=fmtp:' +
-                  rtpmapID[1] +
-                  ' x-google-min-bitrate=' +
-                  this.videoOptions.bitRate +
-                  ';x-google-max-bitrate=' +
-                  this.videoOptions.bitRate;
+              if (video.bitRate && SUPPORTED_VIDEO_FORMATS.includes(format)) {
+                line += `\r\na=fmtp:${matches[1]} x-google-min-bitrate=${video.bitRate};x-google-max-bitrate=${video.bitRate}`;
               }
+              if (audio.bitRate && SUPPORTED_AUDIO_FORMATS.includes(format)) {
+                line += `\r\na=fmtp:${matches[1]} x-google-min-bitrate=${audio.bitRate};x-google-max-bitrate=${audio.bitRate}`;
+              }
+              break;
+            }
+
+            case 'c=IN': {
+              const config = getSectionConfig();
 
               if (
-                this.audioOptions.bitRate &&
-                SUPPORTED_AUDIO_FORMATS.includes(match)
+                config &&
+                config.bitRate &&
+                (browser === 'firefox' || browser === 'safari')
               ) {
-                line +=
-                  '\r\na=fmtp:' +
-                  rtpmapID[1] +
-                  ' x-google-min-bitrate=' +
-                  this.audioOptions.bitRate +
-                  ';x-google-max-bitrate=' +
-                  this.audioOptions.bitRate;
+                line += `\r\nb=TIAS:${config.bitRate * 1000}`;
+                line += `\r\nb=AS:${config.bitRate * 1000}`;
+                line += `\r\nb=CT:${config.bitRate * 1000}`;
+              }
+              break;
+            }
+
+            case 'a=mid': {
+              const config = getSectionConfig();
+
+              if (config && browser === 'chrome') {
+                if (config.bitRate) {
+                  line += `\r\nb=CT:${config.bitRate}`;
+                  line += `\r\nb=AS:${config.bitRate}`;
+
+                  if ('frameRate' in config && config.frameRate) {
+                    line += `\r\na=framerate:${config.frameRate.toFixed(2)}`;
+                  }
+                }
+                sdpSection = null;
               }
               break;
             }
@@ -188,15 +165,14 @@ export class SDPEnhancer {
   }
 
   private addAudio(lines: string[], tmp: Map<number, string[]>): string[] {
-    const pos = lines.findIndex(line => line === 'a=rtcp-mux');
+    const pos = lines.indexOf('a=rtcp-mux');
 
     if (pos !== -1) {
-      const updatedAudio = this.deliverCheckLine(
-        this.audioOptions.codec,
-        'audio',
-        tmp
+      lines.splice(
+        pos + 1,
+        0,
+        ...this.deliverCheckLine(this.audioOptions.codec, 'audio', tmp)
       );
-      lines.splice(pos + 1, 0, ...updatedAudio);
     }
 
     return lines;
@@ -234,25 +210,18 @@ export class SDPEnhancer {
     });
   }
 
-  // Firefox provides a reasonable SDP, Chrome is just odd
-  // so we have to doing a little mundging to make it all work
+  private flattenLines(lines: string[]): string[] {
+    return lines.join('\r\n').split('\r\n');
+  }
+
   private prepareSDP(description: RTCSessionDescriptionInit): string[] {
-    const sdp = description.sdp || '';
-    let lines = sdp.split(/\r\n/);
-
-    if (this.videoOptions.codec !== 'VP9' && sdp.includes('THIS_IS_SDPARTA')) {
-      return lines;
-    }
-
     const tmp = new Map<number, string[]>();
+    const sdp = description.sdp || '';
 
+    let lines = sdp.split(/\r\n/);
     lines = lines.filter(line => line && this.checkLine(line, tmp));
-    lines = this.addAudio(lines, tmp)
-      .join('\r\n')
-      .split('\r\n');
-    lines = this.addVideo(lines, tmp)
-      .join('\r\n')
-      .split('\r\n');
+    lines = this.flattenLines(this.addAudio(lines, tmp));
+    lines = this.flattenLines(this.addVideo(lines, tmp));
 
     return lines;
   }

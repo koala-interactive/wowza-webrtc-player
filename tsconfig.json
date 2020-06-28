@@ -6,7 +6,7 @@
     "paths": {
       "*": ["node_modules/*", "src/*"]
     },
-    "lib": ["dom"],
+    "lib": ["dom"]
   },
   "exclude": ["node_modules", "dist"],
   "types": ["typings", "node"]
