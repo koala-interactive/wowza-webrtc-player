@@ -143,7 +143,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       await pc.setLocalDescription(upgradedDescription);
       const { sdp, iceCandidates } = await wowza.sendOffer(upgradedDescription);
 
-      pc.setRemoteDescription(sdp);
+      await pc.setRemoteDescription(sdp);
       iceCandidates.forEach((ice) => {
         pc.attachIceCandidate(ice);
       });
