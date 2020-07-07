@@ -2,20 +2,17 @@
 <html>
   <head>
     <title>Play HLS example</title>
-    <link href="https://vjs.zencdn.net/7.8.2/video-js.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://vjs.zencdn.net/7.8.2/video-js.min.css" />
+    <link rel="stylesheet" href="./styles.css" />
     <script src="https://vjs.zencdn.net/7.8.2/video.min.js"></script>
   </head>
   <body>
     <video
       id="my-player"
       class="video-js"
-      controls
-      data-setup="{liveui: true, liveTracker:true}"
-      autoplay
-      style="background-color:black"
-      width="640"
-      height="480">
-      <source src="https://5899cc81e09f0.streamlock.net:4443/webrtc/myStream_360p/playlist.m3u8" type="application/x-mpegURL"></source>
+      data-setup='{"liveui": true, "liveTracker":true}'
+      style="background-color:black">
       <p class="vjs-no-js">
         To view this video please enable JavaScript, and consider upgrading to a
         web browser that
@@ -24,5 +21,44 @@
         </a>
       </p>
     </video>
+    <aside>
+      <form>
+        <label>
+          <strong>HLS url</strong>
+          <input name="hls" type="url" value="" placeholder="https://5899cc81e09f0.streamlock.net:4443/webrtc/myStream_360p/playlist.m3u8" />
+        </label>
+
+        <button type="button" id="play" onclick="_play()">Play</button>
+        <button type="button" id="stop" onclick="_stop()" style="display:none">Stop</button>
+      </form>
+    </aside>
   </body>
+  <script>
+    var player = videojs('my-player');
+    var $play = document.getElementById('play');
+    var $stop = document.getElementById('stop');
+
+    function toggle (state) {
+      $play.style.display = state ? 'none' : '';
+      $stop.style.display = state ? '' : 'none';
+    }
+
+    player.on('ended', () => toggle(false));
+    player.on('error', () => toggle(false));
+
+    function _play() {
+      player.src({
+        type: 'application/x-mpegURL',
+        src: localStorage.getItem('hls') || 'https://5899cc81e09f0.streamlock.net:4443/webrtc/myStream_360p/playlist.m3u8'
+      });
+      player.play();
+      toggle(true);
+    }
+
+    function _stop() {
+      player.reset();
+      toggle(false);
+    }
+  </script>
+  <script src="./auto-save.js"></script>
 </html>

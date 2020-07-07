@@ -6,7 +6,8 @@ html {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-video {
+video,
+.video-js {
   object-fit: cover;
   position: fixed;
   top: 0;

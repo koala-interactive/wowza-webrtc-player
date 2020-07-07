@@ -15,7 +15,7 @@
         </label>
         <label>
           <strong>applicationName</strong>
-          <input name="applicationName" type="text" value="" placeholder="live" />
+          <input name="applicationName" type="text" value="" placeholder="webrtc" />
         </label>
         <label>
           <strong>streamName</strong>
@@ -31,11 +31,7 @@
   <script src="../dist/umd/wowza-webrtc-player.js"></script>
   <script>
     const { WowzaWebRTCPlayer } = window['wowza-webrtc-player'];
-    const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
-      sdpUrl: 'wss://5899cc81e09f0.streamlock.net:4443/webrtc-session.json',
-      applicationName: 'webrtc',
-      streamName: 'myStream'
-    });
+    const player = new WowzaWebRTCPlayer(document.querySelector('video'));
 
     player.on('connectionstate', state => console.log('connectionstate', state));
 
@@ -43,7 +39,7 @@
     const show = (id) => document.getElementById(id).style.display = '';
     const setState = (state) => document.getElementById('state').textContent = state;
 
-    window._play = async function () {
+    async function _play () {
       setState('loading...')
 
       player.setConfigurations({
@@ -62,14 +58,15 @@
         hide('stop');
         setState(e.statusDescription);
       }
-    };
+    }
 
-    window._pause = function () {
+    function _pause () {
       player.stop();
 
       show('play');
       hide('stop');
       setState('');
-    };
+    }
   </script>
+  <script src="./auto-save.js"></script>
 </html>

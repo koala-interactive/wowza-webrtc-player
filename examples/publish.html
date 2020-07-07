@@ -15,7 +15,7 @@
         </label>
         <label>
           <strong>applicationName</strong>
-          <input name="applicationName" type="text" value="" placeholder="live" />
+          <input name="applicationName" type="text" value="" placeholder="webrtc" />
         </label>
         <label>
           <strong>streamName</strong>
@@ -33,26 +33,13 @@
   <script>
     const { WowzaWebRTCPlayer } = window['wowza-webrtc-player'];
 
-    const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
-      sdpUrl: 'wss://5e15f1c3875a4.streamlock.net/webrtc-session.json',
-      applicationName: 'live',
-      streamName: 'myStream'
-    });
-
-    window.player = player;
-
+    const player = new WowzaWebRTCPlayer(document.querySelector('video'));
     const hide = (id) => document.getElementById(id).style.display = 'none';
     const show = (id) => document.getElementById(id).style.display = '';
     const setState = (state) => document.getElementById('state').textContent = state;
 
-    window._play = async function () {
+    async function _play () {
       setState('playing...');
-
-      player.setConfigurations({
-        sdpUrl: localStorage.getItem('sdpUrl') || 'wss://5899cc81e09f0.streamlock.net:4443/webrtc-session.json',
-        applicationName: localStorage.getItem('applicationName') || 'webrtc',
-        streamName: localStorage.getItem('streamName') || 'myStream'
-      });
 
       try {
         await player.playLocal();
@@ -62,9 +49,9 @@
       } catch (e) {
         setState('Failure: ' + e);
       }
-    };
+    }
 
-    window._publish = async function () {
+    async function _publish () {
       setState('Publishing...');
 
       player.setConfigurations({
@@ -75,6 +62,7 @@
 
       let lastError = null;
 
+      // Try different codecs
       for (const codec of ['42e01f', 'VP9', 'VP8']) {
         try {
           const p = player.publish({
@@ -84,6 +72,7 @@
             }
           });
 
+          // Display logs
           const pc = player.getPeerConnection();
           pc.oniceconnectionstatechange = () => {
             document.getElementById('status').textContent = ' - ' + pc.iceConnectionState;
@@ -99,7 +88,7 @@
         } catch (e) {
           lastError = e ? e.message || e.statusDescription || e : 'error';
           if (!/video|codec|setRemoteDescription/.test(e)) {
-            break;
+            break; // Stop if not a codec error
           }
         }
       }
@@ -109,7 +98,7 @@
       }
     }
 
-    window._stop = function () {
+    function _stop() {
       hide('stop');
       show('publish');
       setState('');
