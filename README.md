@@ -3,13 +3,13 @@
 Easy to use WebRTC Player library to connect to Wowza protocol.
 
 [![license: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+![lint](https://github.com/koala-interactive/wowza-webrtc-player/workflows/lint/badge.svg?branch=master)
 
 #### TODO
 
 - 📝 Add documentation about `player.getAvailableStreams()`.
 - 📝 Add documentation about `player.setConfigurations()` - (`constraints`, `videoConfigs`, `audioConfigs`, `userData`, `iceServers`)
 - 📦 Ensure it's ready as a NPM package.
-- 📝 Add a method to customize sdp enhancers
 - ✨ Find a way to detect wowza flux disconnection
 - 🐛 Fix random publish failure (invalid codec no Safari desktopo/iOS)
 - 🐛 Fix publish problem using Firefox desktop
@@ -63,4 +63,14 @@ await player.playRemote();
 
 ```ts
 await player.stop();
+```
+
+## Extends/Replace SDP Mungle
+
+```ts
+player.setConfigurations({
+  sdpHandler(sdp, originalHandler) {
+    return originalHandler(sdp);
+  },
+});
 ```

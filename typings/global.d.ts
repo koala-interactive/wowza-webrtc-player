@@ -10,6 +10,12 @@ declare interface TPlayerOptions {
   constraints?: MediaStreamConstraints;
   userData?: object | null;
   iceServers?: RTCIceServer[];
+  sdpHandler?: (
+    sdp: RTCSessionDescriptionInit,
+    originalHandler: (
+      sdp: RTCSessionDescriptionInit
+    ) => RTCSessionDescriptionInit
+  ) => RTCSessionDescriptionInit;
 }
 
 declare interface TVideoConfigs {

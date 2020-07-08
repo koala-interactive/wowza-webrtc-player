@@ -9,6 +9,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public applicationName = '';
   public streamName = '';
   public userData: object | null = null;
+  public sdpHandler: TPlayerOptions['sdpHandler'];
 
   public constraints: MediaStreamConstraints = {
     audio: true,
@@ -70,6 +71,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
 
     if (options.iceServers) {
       this.iceServers = options.iceServers;
+    }
+
+    if (options.sdpHandler) {
+      this.sdpHandler = options.sdpHandler;
     }
   }
 
@@ -138,7 +143,9 @@ export class WowzaWebRTCPlayer extends EventEmitter {
 
       const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
       const description = await pc.createOffer();
-      const upgradedDescription = enhancer.transform(description);
+      const upgradedDescription = this.sdpHandler
+        ? this.sdpHandler(description, (sdp) => enhancer.transform(sdp))
+        : enhancer.transform(description);
 
       await pc.setLocalDescription(upgradedDescription);
       const { sdp, iceCandidates } = await wowza.sendOffer(upgradedDescription);
