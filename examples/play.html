@@ -2,22 +2,36 @@
 <html>
   <head>
     <title>Play example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <video style="background-color:black" width="640" height="480"></video>
-    <br/>
-    <button type="button" id="play" onclick="_play()">Play</button>
-    <button type="button" id="stop" onclick="_pause()" style="display:none">Stop</button>
-    <span id="state"></span>
+    <aside>
+      <form>
+        <label>
+          <strong>sdpUrl</strong>
+          <input name="sdpUrl" type="url" value="" placeholder="wss://efzef64565zef.streamlock.net/webrtc-session.json" />
+        </label>
+        <label>
+          <strong>applicationName</strong>
+          <input name="applicationName" type="text" value="" placeholder="webrtc" />
+        </label>
+        <label>
+          <strong>streamName</strong>
+          <input name="streamName" type="text" value="" placeholder="myStream" />
+        </label>
+
+        <button type="button" id="play" onclick="_play()">Play</button>
+        <button type="button" id="stop" onclick="_stop()" style="display:none">Stop</button>
+        <span id="state"></span>
+      </form>
+    </aside>
   </body>
   <script src="../dist/umd/wowza-webrtc-player.js"></script>
   <script>
     const { WowzaWebRTCPlayer } = window['wowza-webrtc-player'];
-    const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
-      sdpUrl: 'wss://5e15f1c3875a4.streamlock.net/webrtc-session.json',
-      applicationName: 'live',
-      streamName: 'myStream'
-    });
+    const player = new WowzaWebRTCPlayer(document.querySelector('video'));
 
     player.on('connectionstate', state => console.log('connectionstate', state));
 
@@ -25,8 +39,14 @@
     const show = (id) => document.getElementById(id).style.display = '';
     const setState = (state) => document.getElementById('state').textContent = state;
 
-    window._play = async function () {
+    async function _play () {
       setState('loading...')
+
+      player.setConfigurations({
+        sdpUrl: localStorage.getItem('sdpUrl') || 'wss://5899cc81e09f0.streamlock.net:4443/webrtc-session.json',
+        applicationName: localStorage.getItem('applicationName') || 'webrtc',
+        streamName: localStorage.getItem('streamName') || 'myStream'
+      });
 
       try {
         await player.playRemote();
@@ -38,14 +58,15 @@
         hide('stop');
         setState(e.statusDescription);
       }
-    };
+    }
 
-    window._pause = function () {
+    function _pause () {
       player.stop();
 
       show('play');
       hide('stop');
       setState('');
-    };
+    }
   </script>
+  <script src="./auto-save.js"></script>
 </html>

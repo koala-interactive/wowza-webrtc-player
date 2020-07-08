@@ -2,32 +2,43 @@
 <html>
   <head>
     <title>Publish example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <video style="background-color:black" width="640" height="480" muted="muted" autoplay playsinline></video>
-    <br/>
-    <button type="button" id="play" onclick="_play()">Play</button>
-    <button type="button" id="publish" onclick="_publish()" style="display:none">Publish</button>
-    <button type="button" id="stop" onclick="_stop()" style="display:none">Stop</button>
-    <span id="state"></span><span id="status"></span>
+    <video width="640" height="480" muted="muted" autoplay playsinline></video>
+    <aside>
+      <form>
+        <label>
+          <strong>sdpUrl</strong>
+          <input name="sdpUrl" type="url" value="" placeholder="wss://efzef64565zef.streamlock.net/webrtc-session.json" />
+        </label>
+        <label>
+          <strong>applicationName</strong>
+          <input name="applicationName" type="text" value="" placeholder="webrtc" />
+        </label>
+        <label>
+          <strong>streamName</strong>
+          <input name="streamName" type="text" value="" placeholder="myStream" />
+        </label>
+
+        <button type="button" id="play" onclick="_play()">Play</button>
+        <button type="button" id="publish" onclick="_publish()" style="display:none">Publish</button>
+        <button type="button" id="stop" onclick="_stop()" style="display:none">Stop</button>
+        <span id="state"></span><span id="status"></span>
+      </form>
+    </aside>
   </body>
   <script src="../dist/umd/wowza-webrtc-player.js"></script>
   <script>
     const { WowzaWebRTCPlayer } = window['wowza-webrtc-player'];
 
-    const player = new WowzaWebRTCPlayer(document.querySelector('video'), {
-      sdpUrl: 'wss://5e15f1c3875a4.streamlock.net/webrtc-session.json',
-      applicationName: 'live',
-      streamName: 'myStream'
-    });
-
-    window.player = player;
-
+    const player = new WowzaWebRTCPlayer(document.querySelector('video'));
     const hide = (id) => document.getElementById(id).style.display = 'none';
     const show = (id) => document.getElementById(id).style.display = '';
     const setState = (state) => document.getElementById('state').textContent = state;
 
-    window._play = async function () {
+    async function _play () {
       setState('playing...');
 
       try {
@@ -38,29 +49,56 @@
       } catch (e) {
         setState('Failure: ' + e);
       }
-    };
+    }
 
-    window._publish = async function () {
+    async function _publish () {
       setState('Publishing...');
 
-      try {
-        const p = player.publish();
-        const pc = player.getPeerConnection();
+      player.setConfigurations({
+        sdpUrl: localStorage.getItem('sdpUrl') || 'wss://5899cc81e09f0.streamlock.net:4443/webrtc-session.json',
+        applicationName: localStorage.getItem('applicationName') || 'webrtc',
+        streamName: localStorage.getItem('streamName') || 'myStream'
+      });
 
-        pc.oniceconnectionstatechange = () => {
-          document.getElementById('status').textContent = ' - ' + pc.iceConnectionState;
-        };
+      let lastError = null;
 
-        await p;
+      // Try different codecs
+      for (const codec of ['42e01f', 'VP9', 'VP8']) {
+        try {
+          const p = player.publish({
+            videoConfigs: {
+              ...player.videoConfigs,
+              codec
+            }
+          });
 
-        hide('publish');
-        show('stop');
-      } catch (e) {
-        setState('Failure: ' + (e.message || e.statusDescription || e));
+          // Display logs
+          const pc = player.getPeerConnection();
+          pc.oniceconnectionstatechange = () => {
+            document.getElementById('status').textContent = ' - ' + pc.iceConnectionState;
+          };
+
+          await p;
+
+          hide('publish');
+          show('stop');
+          lastError = null;
+          break;
+
+        } catch (e) {
+          lastError = e ? e.message || e.statusDescription || e : 'error';
+          if (!/video|codec|setRemoteDescription/.test(e)) {
+            break; // Stop if not a codec error
+          }
+        }
+      }
+
+      if (lastError) {
+        setState('Failure: ' + lastError);
       }
     }
 
-    window._stop = function () {
+    function _stop() {
       hide('stop');
       show('publish');
       setState('');
@@ -70,4 +108,5 @@
 
     _play();
   </script>
+  <script src="./auto-save.js"></script>
 </html>

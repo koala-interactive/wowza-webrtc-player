@@ -120,7 +120,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       await pc.setLocalDescription(description);
 
       const { iceCandidates } = await wowza.sendResponse(description);
-      iceCandidates.forEach(ice => {
+      iceCandidates.forEach((ice) => {
         pc.attachIceCandidate(ice);
       });
     } finally {
@@ -144,14 +144,14 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
       const description = await pc.createOffer();
       const upgradedDescription = this.sdpHandler
-        ? this.sdpHandler(description, sdp => enhancer.transform(sdp))
+        ? this.sdpHandler(description, (sdp) => enhancer.transform(sdp))
         : enhancer.transform(description);
 
       await pc.setLocalDescription(upgradedDescription);
       const { sdp, iceCandidates } = await wowza.sendOffer(upgradedDescription);
 
-      pc.setRemoteDescription(sdp);
-      iceCandidates.forEach(ice => {
+      await pc.setRemoteDescription(sdp);
+      iceCandidates.forEach((ice) => {
         pc.attachIceCandidate(ice);
       });
     } finally {

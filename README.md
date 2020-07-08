@@ -2,18 +2,20 @@
 
 Easy to use WebRTC Player library to connect to Wowza protocol.
 
+[![license: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+![lint](https://github.com/koala-interactive/wowza-webrtc-player/workflows/lint/badge.svg?branch=master)
+
 #### TODO
-- Complete the readme
-- Ensure it's ready as a NPM package.
-- Add a method to customize sdp enhancers
-- Add documentation about `player.getAvailableStreams()`.
-- Add documentation about settings (`constraints`, `videoConfigs`, `audioConfigs`, `userData`, `iceServices`)
-- Fixes various bugs
-- Find a way to detect wowza disconnection
-- Find a way to work with deprecated DOM methods using Typescript
-- Update examples to be able to insert `sdpUrl`, `applicationName` and `streamName`.
+
+- 📝 Add documentation about `player.getAvailableStreams()`.
+- 📝 Add documentation about `player.setConfigurations()` - (`constraints`, `videoConfigs`, `audioConfigs`, `userData`, `iceServers`)
+- 📦 Ensure it's ready as a NPM package.
+- ✨ Find a way to detect wowza flux disconnection
+- 🐛 Fix random publish failure (invalid codec no Safari desktopo/iOS)
+- 🐛 Fix publish problem using Firefox desktop
 
 ## Base code
+
 ```ts
 import { WowzaWebRTCPlayer } from 'wowza-webrtc-player';
 
@@ -21,7 +23,7 @@ const videoElement = document.querySelector('video');
 const player = new WowzaWebRTCPlayer(videoElement, {
   sdpUrl: 'wss://zeezzrezrezr.streamlock.net/webrtc-session.json',
   applicationName: 'live',
-  streamName: 'myStream'
+  streamName: 'myStream',
 });
 ```
 
@@ -61,4 +63,14 @@ await player.playRemote();
 
 ```ts
 await player.stop();
+```
+
+## Extends/Replace SDP Mungle
+
+```ts
+player.setConfigurations({
+  sdpHandler(sdp, originalHandler) {
+    return originalHandler(sdp);
+  },
+});
 ```

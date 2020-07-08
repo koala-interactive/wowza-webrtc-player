@@ -1,0 +1,19 @@
+name: lint
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Run Lint
+        run: yarn lint
