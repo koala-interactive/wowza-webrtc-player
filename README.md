@@ -22,7 +22,7 @@ Or install using [npm](https://npmjs.org):
 ## Base code
 
 To works, we need to create a **WowzaWebRTCPlayer** instance bound to a HTML5 video element.
-The second parameters allows you to set different [#Options](options). You can change it later using `player.setConfigurations(options)`.
+The second parameters allows you to set different [options](#Options). You can change it later using `player.setConfigurations(options)`.
 
 ```ts
 import { WowzaWebRTCPlayer } from 'wowza-webrtc-player';
