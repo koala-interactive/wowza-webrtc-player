@@ -25,7 +25,7 @@
       <form>
         <label>
           <strong>HLS url</strong>
-          <input name="hls" type="url" value="" placeholder="https://5899cc81e09f0.streamlock.net:4443/webrtc/myStream_360p/playlist.m3u8" />
+          <input name="hls" type="url" value="" placeholder="https://efzef64565zef.streamlock.net/webrtc/myStream_360p/playlist.m3u8" />
         </label>
 
         <button type="button" id="play" onclick="_play()">Play</button>
@@ -49,7 +49,7 @@
     function _play() {
       player.src({
         type: 'application/x-mpegURL',
-        src: localStorage.getItem('hls') || 'https://5899cc81e09f0.streamlock.net:4443/webrtc/myStream_360p/playlist.m3u8'
+        src: localStorage.getItem('hls') || 'https://efzef64565zef.streamlock.net/webrtc/myStream_360p/playlist.m3u8'
       });
       player.play();
       toggle(true);
