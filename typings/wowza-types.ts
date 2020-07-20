@@ -1,7 +1,7 @@
-declare type ValueOf<T> = T[keyof T];
-declare type PartialObject<T> = { [P in keyof T]?: T[P] };
+export type ValueOf<T> = T[keyof T];
+export type PartialObject<T> = { [P in keyof T]?: T[P] };
 
-declare interface TPlayerOptions {
+export interface TPlayerOptions {
   sdpUrl?: string;
   applicationName?: string;
   streamName?: string;
@@ -18,24 +18,24 @@ declare interface TPlayerOptions {
   ) => RTCSessionDescriptionInit;
 }
 
-declare interface TVideoConfigs {
+export interface TVideoConfigs {
   bitRate: number;
   codec: '42e01f' | 'VP8' | 'VP9';
   frameRate: number;
 }
 
-declare interface TAudioConfigs {
+export interface TAudioConfigs {
   bitRate: number;
   codec: 'opus';
 }
 
-declare interface TStreamInfo {
+export interface TStreamInfo {
   applicationName: string;
   sessionId: string;
   streamName: string;
 }
 
-declare interface TStreamItem {
+export interface TStreamItem {
   streamName: string;
   readyAudio: boolean;
   readyVideo: boolean;
@@ -43,27 +43,27 @@ declare interface TStreamItem {
   codecVideo: number;
 }
 
-declare interface TDeferred<T> {
+export interface TDeferred<T> {
   resolve: (data: T) => void;
   promise: Promise<T>;
   reject: (data: T & { status: number; statusDescription: string }) => void;
 }
 
-declare interface TSocketSendBase {
+interface TSocketSendBase {
   direction: 'publish' | 'play';
   command: keyof TSocketSendData;
   streamInfo: TStreamInfo;
   userData: null;
 }
 
-declare interface TSocketRecvBase {
+interface TSocketRecvBase {
   direction: 'publish' | 'play';
   command: keyof TSocketRecvData;
   status: number;
   statusDescription: string;
 }
 
-declare interface TSocketSendData {
+export interface TSocketSendData {
   sendOffer: {
     direction: 'publish';
     command: 'sendOffer';
@@ -84,7 +84,7 @@ declare interface TSocketSendData {
   };
 }
 
-declare interface TSocketRecvData {
+export interface TSocketRecvData {
   sendOffer: TSocketRecvBase & {
     direction: 'publish';
     command: 'sendOffer';
