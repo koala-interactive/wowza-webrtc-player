@@ -4,7 +4,7 @@ import {
   TSocketRecvData,
   TSocketSendData,
   ValueOf,
-} from 'wowza-types';
+} from '../../typings/wowza-types';
 
 import { deferred } from '../utils/deferred';
 

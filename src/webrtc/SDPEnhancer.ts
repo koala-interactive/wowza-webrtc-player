@@ -1,4 +1,4 @@
-import { TVideoConfigs, TAudioConfigs } from 'wowza-types';
+import { TVideoConfigs, TAudioConfigs } from '../../typings/wowza-types';
 
 // Code adapted from https://github.com/WowzaMediaSystems/webrtc-examples/blob/master/src/lib/WowzaMungeSDP.js
 import { browser } from '../utils/browser';

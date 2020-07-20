@@ -5,7 +5,7 @@ import {
   TVideoConfigs,
   TAudioConfigs,
   TStreamItem,
-} from 'wowza-types';
+} from '../typings/wowza-types';
 
 import { getUserMedia } from './webrtc/getUserMedia';
 import { PeerConnection } from './webrtc/PeerConnection';
