@@ -1,3 +1,5 @@
+import { TVideoConfigs, TAudioConfigs } from 'wowza-types';
+
 // Code adapted from https://github.com/WowzaMediaSystems/webrtc-examples/blob/master/src/lib/WowzaMungeSDP.js
 import { browser } from '../utils/browser';
 
@@ -35,7 +37,7 @@ export class SDPEnhancer {
     const sdp =
       lines
         .filter(Boolean)
-        .map(line => {
+        .map((line) => {
           const [header] = line.split(/\s|:/, 1);
 
           switch (header) {
@@ -157,7 +159,7 @@ export class SDPEnhancer {
     return profile !== 'VP8' && profile !== 'VP9'
       ? lines
       : lines.filter(
-          transport =>
+          (transport) =>
             !transport.includes('transport-cc') &&
             !transport.includes('goog-remb') &&
             !transport.includes('nack')
@@ -193,7 +195,7 @@ export class SDPEnhancer {
       tmp
     );
 
-    return lines.map(line => {
+    return lines.map((line) => {
       if (rtcpSize) {
         if (!done && line === 'a=rtcp-rsize') {
           done = true;
@@ -219,7 +221,7 @@ export class SDPEnhancer {
     const sdp = description.sdp || '';
 
     let lines = sdp.split(/\r\n/);
-    lines = lines.filter(line => line && this.checkLine(line, tmp));
+    lines = lines.filter((line) => line && this.checkLine(line, tmp));
     lines = this.flattenLines(this.addAudio(lines, tmp));
     lines = this.flattenLines(this.addVideo(lines, tmp));
 

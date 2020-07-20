@@ -1,4 +1,12 @@
 import { EventEmitter } from 'events';
+
+import {
+  TPlayerOptions,
+  TVideoConfigs,
+  TAudioConfigs,
+  TStreamItem,
+} from 'wowza-types';
+
 import { getUserMedia } from './webrtc/getUserMedia';
 import { PeerConnection } from './webrtc/PeerConnection';
 import { Wowza } from './wowza/wowza';

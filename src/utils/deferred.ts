@@ -1,3 +1,5 @@
+import { TDeferred } from 'wowza-types';
+
 export function deferred<T>(): TDeferred<T> {
   const output = {} as TDeferred<T>;
 

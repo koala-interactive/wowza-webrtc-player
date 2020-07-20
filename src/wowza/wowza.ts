@@ -1,3 +1,11 @@
+import {
+  TStreamInfo,
+  TPlayerOptions,
+  TSocketRecvData,
+  TSocketSendData,
+  ValueOf,
+} from 'wowza-types';
+
 import { deferred } from '../utils/deferred';
 
 export class Wowza {
