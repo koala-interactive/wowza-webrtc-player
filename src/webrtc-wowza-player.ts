@@ -110,6 +110,18 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     return mediaStream;
   }
 
+  public stopLocal(): void {
+    this.stop();
+
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+
+      this.mediaStream = null;
+    }
+  }
+
   public async playRemote(options?: TPlayerOptions): Promise<void> {
     if (options) {
       this.setConfigurations(options);

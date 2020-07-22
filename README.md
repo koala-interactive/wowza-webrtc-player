@@ -57,6 +57,12 @@ await player.publish();
 await player.stop();
 ```
 
+#### 4. Stop the camera
+
+```ts
+await player.stopLocal();
+```
+
 ---
 
 ## As a Viewer
