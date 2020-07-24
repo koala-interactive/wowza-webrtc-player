@@ -51,10 +51,16 @@ await player.playLocal();
 await player.publish();
 ```
 
-#### 3. Stop the publication
+#### 3. Stop publishing the flux (but camera still active)
 
 ```ts
 await player.stop();
+```
+
+#### 4. Stop the camera (and also stop publishing the flux)
+
+```ts
+await player.stopLocal();
 ```
 
 ---
