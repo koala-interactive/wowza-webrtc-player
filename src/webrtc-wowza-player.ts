@@ -18,7 +18,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public streamName = '';
   public userData: object | null = null;
   public sdpHandler: TPlayerOptions['sdpHandler'];
-  public profileIds: string[] = [];
+  public profileIds: string[] = ['',''];
 
   public constraints: MediaStreamConstraints = {
     audio: true,
