@@ -18,6 +18,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public streamName = '';
   public userData: object | null = null;
   public sdpHandler: TPlayerOptions['sdpHandler'];
+  public profileIds: string[] = [];
 
   public constraints: MediaStreamConstraints = {
     audio: true,
@@ -81,6 +82,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       this.iceServers = options.iceServers;
     }
 
+    if (options.profileIds) {
+      this.profileIds = options.profileIds 
+    }
+
     if (options.sdpHandler) {
       this.sdpHandler = options.sdpHandler;
     }
@@ -134,6 +139,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const pc = this.createPeerConnection();
 
       pc.on('addstream', this.attachStream.bind(this));
+      sdpData.sdp = sdpData.sdp?.replace(this.profileIds[0], this.profileIds[1])
       await pc.setRemoteDescription(sdpData);
 
       const description = await pc.createAnswer();

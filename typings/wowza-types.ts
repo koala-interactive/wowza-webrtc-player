@@ -10,6 +10,7 @@ export interface TPlayerOptions {
   constraints?: MediaStreamConstraints;
   userData?: object | null;
   iceServers?: RTCIceServer[];
+  profileIds: string[]; 
   sdpHandler?: (
     sdp: RTCSessionDescriptionInit,
     originalHandler: (
