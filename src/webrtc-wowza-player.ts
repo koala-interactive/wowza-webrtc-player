@@ -114,7 +114,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     this.stop();
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => {
+      this.mediaStream.getTracks().forEach(track => {
         track.stop();
       });
 
@@ -137,10 +137,19 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       await pc.setRemoteDescription(sdpData);
 
       const description = await pc.createAnswer();
-      await pc.setLocalDescription(description);
+      const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
+      const upgradedDescription = this.sdpHandler
+        ? this.sdpHandler(
+            description,
+            sdp => enhancer.transformPlay(sdp),
+            'play'
+          )
+        : enhancer.transformPlay(description);
 
-      const { iceCandidates } = await wowza.sendResponse(description);
-      iceCandidates.forEach((ice) => {
+      await pc.setLocalDescription(upgradedDescription);
+
+      const { iceCandidates } = await wowza.sendResponse(upgradedDescription);
+      iceCandidates.forEach(ice => {
         pc.attachIceCandidate(ice);
       });
     } finally {
@@ -164,14 +173,18 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
       const description = await pc.createOffer();
       const upgradedDescription = this.sdpHandler
-        ? this.sdpHandler(description, (sdp) => enhancer.transform(sdp))
-        : enhancer.transform(description);
+        ? this.sdpHandler(
+            description,
+            sdp => enhancer.transformPublish(sdp),
+            'publish'
+          )
+        : enhancer.transformPublish(description);
 
       await pc.setLocalDescription(upgradedDescription);
       const { sdp, iceCandidates } = await wowza.sendOffer(upgradedDescription);
 
       await pc.setRemoteDescription(sdp);
-      iceCandidates.forEach((ice) => {
+      iceCandidates.forEach(ice => {
         pc.attachIceCandidate(ice);
       });
     } finally {
