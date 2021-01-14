@@ -14,7 +14,8 @@ export interface TPlayerOptions {
     sdp: RTCSessionDescriptionInit,
     originalHandler: (
       sdp: RTCSessionDescriptionInit
-    ) => RTCSessionDescriptionInit
+    ) => RTCSessionDescriptionInit,
+    type: 'play' | 'publish'
   ) => RTCSessionDescriptionInit;
 }
 

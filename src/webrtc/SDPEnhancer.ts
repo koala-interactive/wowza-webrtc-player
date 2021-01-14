@@ -18,7 +18,45 @@ export class SDPEnhancer {
     private audioOptions: TAudioConfigs
   ) {}
 
-  public transform(
+  // For greatest playback compatibility,
+  // force H.264 playback to constrained baseline (42e01f).
+  // Adapted from https://www.wowza.com/wp-content/themes/wowzav1/webrtc-ui/wordpress-dev/1.2.8/lib/WowzaMungeSDP.js
+  public transformPlay(
+    description: RTCSessionDescriptionInit
+  ): RTCSessionDescriptionInit {
+    if (!description.sdp) {
+      return description;
+    }
+
+    // The profile-level-id string has three parts: XXYYZZ, where
+    //   XX: 42 baseline, 4D main, 64 high
+    //   YY: constraint
+    //   ZZ: level ID
+    // Look for codecs higher than baseline and force downward.
+    description.sdp = description.sdp.replace(
+      /profile-level-id=(\w+);/gi,
+      (_, $0) => {
+        const profileId = parseInt($0, 16);
+        let profile = (profileId >> 16) & 0xff;
+        let constraint = (profileId >> 8) & 0xff;
+        let level = profileId & 0xff;
+
+        if (profile > 0x42) {
+          profile = 0x42;
+          constraint = 0xe0;
+          level = 0x1f;
+        } else if (constraint === 0x00) {
+          constraint = 0xe0;
+        }
+
+        return ((profile << 16) | (constraint << 8) | level).toString(16);
+      }
+    );
+
+    return description;
+  }
+
+  public transformPublish(
     description: RTCSessionDescriptionInit
   ): RTCSessionDescriptionInit {
     const lines = this.prepareSDP(description);

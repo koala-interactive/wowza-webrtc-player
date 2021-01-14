@@ -85,8 +85,14 @@ await player.stop();
 
 ```ts
 player.setConfigurations({
-  sdpHandler(sdp, originalHandler) {
-    return originalHandler(sdp);
+  sdpHandler(sdp, originalHandler, type) {
+    if (type === 'play') {
+      // update sdp
+      return originalHandler(sdp);
+    } else if (type === 'publish') {
+      // update sdp
+      return originalHandler(sdp);
+    }
   },
 });
 ```
@@ -100,7 +106,7 @@ _It need to be enabled in your Wowza server._
 ```ts
 const streams = await player.getAvailableStreams();
 
-streams.forEach((stream) => {
+streams.forEach(stream => {
   console.log(
     stream.streamName,
     stream.codecAudio,
