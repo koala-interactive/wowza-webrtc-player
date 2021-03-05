@@ -93,6 +93,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     }
   }
 
+  public getMediaStream(): MediaStream | null {
+    return this.mediaStream;
+  }
+
   public getPeerConnection(): RTCPeerConnection | null {
     return this.pc ? this.pc.getPeerConnection() : null;
   }
@@ -114,7 +118,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     this.stop();
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(track => {
+      this.mediaStream.getTracks().forEach((track) => {
         track.stop();
       });
 
@@ -141,7 +145,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const upgradedDescription = this.sdpHandler
         ? this.sdpHandler(
             description,
-            sdp => enhancer.transformPlay(sdp),
+            (sdp) => enhancer.transformPlay(sdp),
             'play'
           )
         : enhancer.transformPlay(description);
@@ -149,7 +153,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       await pc.setLocalDescription(upgradedDescription);
 
       const { iceCandidates } = await wowza.sendResponse(upgradedDescription);
-      iceCandidates.forEach(ice => {
+      iceCandidates.forEach((ice) => {
         pc.attachIceCandidate(ice);
       });
     } finally {
@@ -175,7 +179,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const upgradedDescription = this.sdpHandler
         ? this.sdpHandler(
             description,
-            sdp => enhancer.transformPublish(sdp),
+            (sdp) => enhancer.transformPublish(sdp),
             'publish'
           )
         : enhancer.transformPublish(description);
@@ -184,7 +188,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const { sdp, iceCandidates } = await wowza.sendOffer(upgradedDescription);
 
       await pc.setRemoteDescription(sdp);
-      iceCandidates.forEach(ice => {
+      iceCandidates.forEach((ice) => {
         pc.attachIceCandidate(ice);
       });
     } finally {
@@ -225,7 +229,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     return this.pc;
   }
 
-  private attachStream(stream: MediaStream): void {
+  public attachStream(stream: MediaStream): void {
     this.mediaStream = stream;
 
     try {
