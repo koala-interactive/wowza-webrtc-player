@@ -81,6 +81,18 @@ await player.stop();
 
 ---
 
+---
+
+## Access/Update mediaStream
+
+```ts
+const stream = player.getMediaStream();
+
+player.attachStream(newStream);
+```
+
+---
+
 ## Extends/Replace SDP Mungle
 
 ```ts
@@ -106,7 +118,7 @@ _It need to be enabled in your Wowza server._
 ```ts
 const streams = await player.getAvailableStreams();
 
-streams.forEach(stream => {
+streams.forEach((stream) => {
   console.log(
     stream.streamName,
     stream.codecAudio,
@@ -122,10 +134,10 @@ streams.forEach(stream => {
 ## Options
 
 | Key             | Type                                                                                                |                                                                                                                |
-| --------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| --------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --- |
 | applicationName | _`string`_                                                                                          | Your wowza app name (`"live"` or `"webrtc"` in Wowza documentation).                                           |
 | streamName      | _`string`_                                                                                          | Your Wowza stream name (`"myStream"` in Wowza documentation)                                                   |
-| sdpUrl          | _`string`_                                                                                          | Your Wowza websocket secured url (should looks like `"wss://zeezzrezrezr.streamlock.net/webrtc-session.json"`) |  |
+| sdpUrl          | _`string`_                                                                                          | Your Wowza websocket secured url (should looks like `"wss://zeezzrezrezr.streamlock.net/webrtc-session.json"`) |     |
 | constrains      | _[MediaStreamConstraints](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints)_ | `{ video: true, audio: true }`                                                                                 |
 | iceServers      | _[RTCIceServer](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer)_                     | List of your ICE server to connect to                                                                          |
 | videoConfigs    | _`Object`_                                                                                          | `{ bitRate:360, codec:'VP8', frameRate: 29.97 }`                                                               |
