@@ -134,10 +134,10 @@ streams.forEach((stream) => {
 ## Options
 
 | Key             | Type                                                                                                |                                                                                                                |
-| --------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --- |
+| --------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | applicationName | _`string`_                                                                                          | Your wowza app name (`"live"` or `"webrtc"` in Wowza documentation).                                           |
 | streamName      | _`string`_                                                                                          | Your Wowza stream name (`"myStream"` in Wowza documentation)                                                   |
-| sdpUrl          | _`string`_                                                                                          | Your Wowza websocket secured url (should looks like `"wss://zeezzrezrezr.streamlock.net/webrtc-session.json"`) |     |
+| sdpUrl          | _`string`_                                                                                          | Your Wowza websocket secured url (should looks like `"wss://zeezzrezrezr.streamlock.net/webrtc-session.json"`) | 
 | constrains      | _[MediaStreamConstraints](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints)_ | `{ video: true, audio: true }`                                                                                 |
 | iceServers      | _[RTCIceServer](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer)_                     | List of your ICE server to connect to                                                                          |
 | videoConfigs    | _`Object`_                                                                                          | `{ bitRate:360, codec:'VP8', frameRate: 29.97 }`                                                               |
