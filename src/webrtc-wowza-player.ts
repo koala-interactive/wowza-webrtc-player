@@ -242,6 +242,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       this.video.src = window.URL.createObjectURL(stream);
     }
 
+    if (this.pc) {
+      this.pc.attachMediaStream(stream);
+    }
+
     this.video.play();
   }
 }
