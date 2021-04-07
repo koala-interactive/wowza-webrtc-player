@@ -72,14 +72,22 @@ export class PeerConnection extends EventEmitter {
   }
 
   public attachMediaStream(mediaStream: MediaStream): void {
-    if (mediaStream.getTracks) {
-      mediaStream.getTracks().forEach((track) => {
-        this.pc.addTrack(track, mediaStream);
+    const pc = this.pc;
+    const senders = pc.getSenders();
+    const tracks = mediaStream.getTracks();
+
+    if (!senders.length) {
+      tracks.forEach((track) => {
+        pc.addTrack(track, mediaStream);
       });
-    } else if ('addStream' in this.pc) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      this.pc.addStream(mediaStream);
+    } else {
+      tracks.forEach((track) => {
+        senders
+          .filter((sender) => sender.track?.kind === track.kind)
+          .forEach((sender) => {
+            sender.replaceTrack(track);
+          });
+      });
     }
   }
 
