@@ -113,14 +113,13 @@ export class SDPEnhancer {
             case 'c=IN': {
               const config = getSectionConfig();
 
-              if (
-                config &&
-                config.bitRate &&
-                (browser === 'firefox' || browser === 'safari')
-              ) {
-                line += `\r\nb=TIAS:${config.bitRate * 1000}`;
-                line += `\r\nb=AS:${config.bitRate * 1000}`;
-                line += `\r\nb=CT:${config.bitRate * 1000}`;
+              if (config?.bitRate && ['firefox', 'safari'].includes(browser)) {
+                const bitRate = config.bitRate * 1000;
+                const bitRateTIAS = bitRate * 0.95 - 50 * 40 * 8;
+
+                line += `\r\nb=TIAS:${bitRateTIAS}`;
+                line += `\r\nb=AS:${bitRate}`;
+                line += `\r\nb=CT:${bitRate}`;
               }
               break;
             }
@@ -205,14 +204,25 @@ export class SDPEnhancer {
   }
 
   private addAudio(lines: string[], tmp: Map<number, string[]>): string[] {
-    const pos = lines.indexOf('a=rtcp-mux');
+    let sdpSection = '';
 
-    if (pos !== -1) {
-      lines.splice(
-        pos + 1,
-        0,
-        ...this.deliverCheckLine(this.audioOptions.codec, 'audio', tmp)
-      );
+    for (let i = 0, count = lines.length; i < count; ++i) {
+      const line = lines[i];
+
+      if (line.startsWith('m=audio')) {
+        sdpSection = 'audio';
+      } else if (line.startsWith('m=video')) {
+        sdpSection = 'video';
+      } else if (line === 'a=rtcp-mux' && sdpSection === 'audio') {
+        const audioAddedBuffer = this.deliverCheckLine(
+          this.audioOptions.codec,
+          'audio',
+          tmp
+        );
+
+        lines.splice(i + 1, 0, ...audioAddedBuffer);
+        break;
+      }
     }
 
     return lines;
