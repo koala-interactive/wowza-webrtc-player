@@ -236,10 +236,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const oldStream =
         this.video.srcObject instanceof MediaStream && this.video.srcObject;
       if (!oldStream || oldStream.id !== stream.id) {
-        this.video.srcObject = stream;
+        this.video.src = stream;
       }
     } catch (error) {
-      this.video.src = window.URL.createObjectURL(stream);
+      this.video.srcObject = stream;
     }
 
     if (this.pc) {
