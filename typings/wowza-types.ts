@@ -17,6 +17,7 @@ export interface TPlayerOptions {
     ) => RTCSessionDescriptionInit,
     type: 'play' | 'publish'
   ) => RTCSessionDescriptionInit;
+  sharedSecret?: string| null;
 }
 
 export interface TVideoConfigs {
@@ -34,6 +35,7 @@ export interface TStreamInfo {
   applicationName: string;
   sessionId: string;
   streamName: string;
+  sessionToken: string | null;
 }
 
 export interface TStreamItem {

@@ -18,6 +18,8 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public streamName = '';
   public userData: object | null = null;
   public sdpHandler: TPlayerOptions['sdpHandler'];
+  public sharedSecret: string | null = null;
+  private sessionToken: string | null = null;
 
   public constraints: MediaStreamConstraints = {
     audio: true,
@@ -83,6 +85,11 @@ export class WowzaWebRTCPlayer extends EventEmitter {
 
     if (options.sdpHandler) {
       this.sdpHandler = options.sdpHandler;
+    }
+
+    if (options.sharedSecret) {
+      this.sharedSecret = options.sharedSecret;
+      this.sessionToken = this.createSessionToken(options.sharedSecret);
     }
   }
 
@@ -216,6 +223,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
         applicationName: this.applicationName,
         sessionId: '[empty]',
         streamName: this.streamName,
+        sessionToken: this.sessionToken,
       },
       this.userData
     );
@@ -247,5 +255,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     }
 
     this.video.play();
+  }
+
+  private createSessionToken(sharedSecret: string): string {
+    const token = 'abc';
+    return token;
   }
 }
