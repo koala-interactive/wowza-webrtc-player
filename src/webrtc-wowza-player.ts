@@ -5,6 +5,7 @@ import {
   TVideoConfigs,
   TAudioConfigs,
   TStreamItem,
+  TSecureToken,
 } from '../typings/wowza-types';
 
 import { getUserMedia } from './webrtc/getUserMedia';
@@ -18,8 +19,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public streamName = '';
   public userData: object | null = null;
   public sdpHandler: TPlayerOptions['sdpHandler'];
-  public sharedSecret: string | null = null;
-  private sessionToken: string | null = null;
+  public secureToken: TSecureToken | null = null;
 
   public constraints: MediaStreamConstraints = {
     audio: true,
@@ -87,9 +87,8 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       this.sdpHandler = options.sdpHandler;
     }
 
-    if (options.sharedSecret) {
-      this.sharedSecret = options.sharedSecret;
-      this.sessionToken = this.createSessionToken(options.sharedSecret);
+    if (options.secureToken) {
+      this.secureToken = options.secureToken;
     }
   }
 
@@ -223,7 +222,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
         applicationName: this.applicationName,
         sessionId: '[empty]',
         streamName: this.streamName,
-        sessionToken: this.sessionToken,
+        secureToken: this.secureToken,
       },
       this.userData
     );
@@ -255,10 +254,5 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     }
 
     this.video.play();
-  }
-
-  private createSessionToken(sharedSecret: string): string {
-    const token = 'abc';
-    return token;
   }
 }
