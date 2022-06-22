@@ -17,7 +17,7 @@ export interface TPlayerOptions {
     ) => RTCSessionDescriptionInit,
     type: 'play' | 'publish'
   ) => RTCSessionDescriptionInit;
-  secureToken?: TSecureToken | null;
+  secureToken?: TSecureToken;
 }
 
 export interface TVideoConfigs {
@@ -35,7 +35,7 @@ export interface TStreamInfo {
   applicationName: string;
   sessionId: string;
   streamName: string;
-  secureToken?: TSecureToken | null;
+  secureToken?: TSecureToken;
 }
 
 export interface TStreamItem {
@@ -75,7 +75,7 @@ export interface TSocketSendData {
   getOffer: {
     direction: 'play';
     command: 'getOffer';
-    secureToken?: TSecureToken | null;
+    secureToken?: TSecureToken;
   };
   sendResponse: {
     direction: 'play';
