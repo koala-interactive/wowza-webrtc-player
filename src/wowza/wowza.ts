@@ -43,6 +43,13 @@ export class Wowza {
   }
 
   public getOffer(): Promise<TSocketRecvData['getOffer']> {
+    if (this.streamInfo.secureToken) {
+      return this.send<TSocketSendData['getOffer'], TSocketRecvData['getOffer']>({
+        direction: 'play',
+        command: 'getOffer',
+        secureToken: this.streamInfo.secureToken,
+      });
+    }
     return this.send<TSocketSendData['getOffer'], TSocketRecvData['getOffer']>({
       direction: 'play',
       command: 'getOffer',

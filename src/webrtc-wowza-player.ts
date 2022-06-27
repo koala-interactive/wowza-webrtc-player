@@ -5,6 +5,7 @@ import {
   TVideoConfigs,
   TAudioConfigs,
   TStreamItem,
+  TSecureToken,
 } from '../typings/wowza-types';
 
 import { getUserMedia } from './webrtc/getUserMedia';
@@ -18,6 +19,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public streamName = '';
   public userData: object | null = null;
   public sdpHandler: TPlayerOptions['sdpHandler'];
+  public secureToken?: TSecureToken;
 
   public constraints: MediaStreamConstraints = {
     audio: true,
@@ -83,6 +85,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
 
     if (options.sdpHandler) {
       this.sdpHandler = options.sdpHandler;
+    }
+
+    if (options.secureToken) {
+      this.secureToken = options.secureToken;
     }
   }
 
@@ -216,6 +222,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
         applicationName: this.applicationName,
         sessionId: '[empty]',
         streamName: this.streamName,
+        secureToken: this.secureToken,
       },
       this.userData
     );
@@ -236,9 +243,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
       const oldStream =
         this.video.srcObject instanceof MediaStream && this.video.srcObject;
       if (!oldStream || oldStream.id !== stream.id) {
-        this.video.srcObject = stream;
+        this.video.src = stream;
       }
     } catch (error) {
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject
       this.video.srcObject = stream;
     }
 
