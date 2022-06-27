@@ -19,7 +19,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   public streamName = '';
   public userData: object | null = null;
   public sdpHandler: TPlayerOptions['sdpHandler'];
-  public secureToken: TSecureToken | null = null;
+  public secureToken?: TSecureToken;
 
   public constraints: MediaStreamConstraints = {
     audio: true,
@@ -246,7 +246,8 @@ export class WowzaWebRTCPlayer extends EventEmitter {
         this.video.srcObject = stream;
       }
     } catch (error) {
-      this.video.src = window.URL.createObjectURL(stream);
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject
+      this.video.srcObject = stream;
     }
 
     if (this.pc) {
