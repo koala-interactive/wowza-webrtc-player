@@ -48,7 +48,7 @@ export class SDPEnhancer {
         } else if (constraint === 0x00) {
           constraint = 0xe0;
         }
-        return `profile-level-id=${((profile << 16) | (constraint << 8) | level).toString(16)};`;
+        return `profile-level-id=${((profile << 16) | (constraint << 8) | level).toString(16)}`;
       }
     );
     return description;
