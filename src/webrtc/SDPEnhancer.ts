@@ -34,7 +34,7 @@ export class SDPEnhancer {
     //   ZZ: level ID
     // Look for codecs higher than baseline and force downward.
     description.sdp = description.sdp.replace(
-      /profile-level-id=(\w+);/gi,
+      /profile-level-id=(\w+)/gi,
       (_, $0) => {
         const profileId = parseInt($0, 16);
         let profile = (profileId >> 16) & 0xff;
@@ -48,11 +48,9 @@ export class SDPEnhancer {
         } else if (constraint === 0x00) {
           constraint = 0xe0;
         }
-
-        return ((profile << 16) | (constraint << 8) | level).toString(16);
+        return `profile-level-id=${((profile << 16) | (constraint << 8) | level).toString(16)}`;
       }
     );
-
     return description;
   }
 
