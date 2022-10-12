@@ -5,9 +5,10 @@ export function getUserMedia(
     return navigator.mediaDevices.getUserMedia(constraints);
   }
 
-  if (navigator.getUserMedia) {
+  const nav: any = window.navigator;
+  if (nav.getUserMedia) {
     return new Promise((resolve, reject) => {
-      navigator.getUserMedia(constraints, resolve, reject);
+      nav.getUserMedia(constraints, resolve, reject);
     });
   }
 
