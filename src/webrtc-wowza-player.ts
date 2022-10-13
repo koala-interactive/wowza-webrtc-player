@@ -239,9 +239,9 @@ export class WowzaWebRTCPlayer extends EventEmitter {
         this.video.srcObject = stream;
       }
     } catch (error) {
-      if (stream instanceof MediaSource) {
-        this.video.src = window.URL.createObjectURL(stream);
-      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      this.video.src = window.URL.createObjectURL(stream);
     }
 
     if (this.pc) {
