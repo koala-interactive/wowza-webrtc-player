@@ -5,10 +5,11 @@ export function getUserMedia(
     return navigator.mediaDevices.getUserMedia(constraints);
   }
 
-  const nav: any = window.navigator;
-  if (nav.getUserMedia) {
+  if ('getUserMedia' in navigator) {
     return new Promise((resolve, reject) => {
-      nav.getUserMedia(constraints, resolve, reject);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore: error because navigator.getUserMedia is deprecated
+      navigator.getUserMedia(constraints, resolve, reject);
     });
   }
 

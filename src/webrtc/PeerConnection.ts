@@ -88,7 +88,7 @@ export class PeerConnection extends EventEmitter {
     }
   }
 
-  private handleNewStreamEvent({ stream }: any): void {
+  private handleNewStreamEvent({ stream }: { stream: MediaStream }): void {
     this.emit('addstream', stream);
   }
 
