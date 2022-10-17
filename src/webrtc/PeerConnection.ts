@@ -1,17 +1,14 @@
 import { EventEmitter } from 'events';
 
-const RTCPeerConnectionAPI =
-  window.RTCPeerConnection; /* ||
+const RTCPeerConnectionAPI = window.RTCPeerConnection; /* ||
   window.mozRTCPeerConnection ||
   window.webkitRTCPeerConnection*/
 
-const RTCIceCandidateAPI =
-  window.RTCIceCandidate; /* ||
+const RTCIceCandidateAPI = window.RTCIceCandidate; /* ||
   window.mozRTCIceCandidate ||
   window.webkitRTCIceCandidate*/
 
-const RTCSessionDescriptionAPI =
-  window.RTCSessionDescription; /* ||
+const RTCSessionDescriptionAPI = window.RTCSessionDescription; /* ||
   window.mozRTCSessionDescription ||
   window.webkitRTCSessionDescription*/
 
@@ -91,7 +88,7 @@ export class PeerConnection extends EventEmitter {
     }
   }
 
-  private handleNewStreamEvent({ stream }: MediaStreamEvent): void {
+  private handleNewStreamEvent({ stream }: { stream: MediaStream }): void {
     this.emit('addstream', stream);
   }
 
