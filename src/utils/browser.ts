@@ -3,8 +3,8 @@ export const browser =
     ? 'firefox'
     : 'webkitGetUserMedia' in navigator ||
       (window.isSecureContext === false &&
-        window.webkitRTCPeerConnection &&
-        !window.RTCIceGatherer)
+        'webkitRTCPeerConnection' in window &&
+        !('RTCIceGatherer' in window))
     ? 'chrome'
     : navigator.mediaDevices && navigator.userAgent.match(/Edge\/(\d+).(\d+)$/)
     ? 'edge'
