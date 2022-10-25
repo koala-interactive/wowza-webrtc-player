@@ -1,6 +1,8 @@
 # gitignore
-.DS_Store
-node_modules
+ .DS_Store
+ node_modules
 
-npm-shrinkwrap.json
-yarn.lock
+ # Only apps should have lockfiles
+ npm-shrinkwrap.json
+ package-lock.json
+ yarn.lock
