@@ -1,17 +1,16 @@
 import { EventEmitter } from 'events';
 
 import {
-  TPlayerOptions,
-  TVideoConfigs,
   TAudioConfigs,
-  TStreamItem,
+  TPlayerOptions,
   TSecureToken,
+  TStreamItem,
+  TVideoConfigs,
 } from '../typings/wowza-types';
 
-import { getUserMedia } from './webrtc/getUserMedia';
 import { PeerConnection } from './webrtc/PeerConnection';
-import { Wowza } from './wowza/wowza';
 import { SDPEnhancer } from './webrtc/SDPEnhancer';
+import { Wowza } from './wowza/wowza';
 
 export class WowzaWebRTCPlayer extends EventEmitter {
   public sdpUrl = '';
@@ -90,6 +89,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     if (options.secureToken) {
       this.secureToken = options.secureToken;
     }
+
+    if (options.mediaStream) {
+      this.mediaStream = options.mediaStream;
+    }
   }
 
   public stop(): void {
@@ -107,66 +110,6 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     return this.pc ? this.pc.getPeerConnection() : null;
   }
 
-  public async playLocal(
-    constraints?: MediaStreamConstraints
-  ): Promise<MediaStream> {
-    if (constraints) {
-      this.constraints = constraints;
-    }
-
-    const mediaStream = await getUserMedia(this.constraints);
-    this.attachStream(mediaStream);
-
-    return mediaStream;
-  }
-
-  public stopLocal(): void {
-    this.stop();
-
-    if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => {
-        track.stop();
-      });
-
-      this.mediaStream = null;
-    }
-  }
-
-  public async playRemote(options?: TPlayerOptions): Promise<void> {
-    if (options) {
-      this.setConfigurations(options);
-    }
-
-    const wowza = this.createWowzaInstance();
-
-    try {
-      const { sdp: sdpData } = await wowza.getOffer();
-      const pc = this.createPeerConnection();
-
-      pc.on('addstream', this.attachStream.bind(this));
-      await pc.setRemoteDescription(sdpData);
-
-      const description = await pc.createAnswer();
-      const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
-      const upgradedDescription = this.sdpHandler
-        ? this.sdpHandler(
-            description,
-            (sdp) => enhancer.transformPlay(sdp),
-            'play'
-          )
-        : enhancer.transformPlay(description);
-
-      await pc.setLocalDescription(upgradedDescription);
-
-      const { iceCandidates } = await wowza.sendResponse(upgradedDescription);
-      iceCandidates.forEach((ice) => {
-        pc.attachIceCandidate(ice);
-      });
-    } finally {
-      wowza.disconnect();
-    }
-  }
-
   public async publish(options?: TPlayerOptions): Promise<void> {
     if (options) {
       this.setConfigurations(options);
@@ -175,28 +118,33 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     const wowza = this.createWowzaInstance();
 
     try {
-      const mediaStream = this.mediaStream || (await this.playLocal());
+      const mediaStream = this.mediaStream;
       const pc = this.createPeerConnection();
+      if (mediaStream !== null) {
+        pc.attachMediaStream(mediaStream);
 
-      pc.attachMediaStream(mediaStream);
+        const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
+        const description = await pc.createOffer();
+        const upgradedDescription = this.sdpHandler
+          ? this.sdpHandler(
+              description,
+              (sdp) => enhancer.transformPublish(sdp),
+              'publish'
+            )
+          : enhancer.transformPublish(description);
 
-      const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
-      const description = await pc.createOffer();
-      const upgradedDescription = this.sdpHandler
-        ? this.sdpHandler(
-            description,
-            (sdp) => enhancer.transformPublish(sdp),
-            'publish'
-          )
-        : enhancer.transformPublish(description);
+        await pc.setLocalDescription(upgradedDescription);
+        const { sdp, iceCandidates } = await wowza.sendOffer(
+          upgradedDescription
+        );
 
-      await pc.setLocalDescription(upgradedDescription);
-      const { sdp, iceCandidates } = await wowza.sendOffer(upgradedDescription);
-
-      await pc.setRemoteDescription(sdp);
-      iceCandidates.forEach((ice) => {
-        pc.attachIceCandidate(ice);
-      });
+        await pc.setRemoteDescription(sdp);
+        iceCandidates.forEach((ice) => {
+          pc.attachIceCandidate(ice);
+        });
+      } else {
+        Promise.resolve();
+      }
     } finally {
       wowza.disconnect();
     }

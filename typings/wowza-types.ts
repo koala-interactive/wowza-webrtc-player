@@ -8,6 +8,7 @@ export interface TPlayerOptions {
   videoConfigs?: TVideoConfigs;
   audioConfigs?: TAudioConfigs;
   constraints?: MediaStreamConstraints;
+  mediaStream?: MediaStream;
   userData?: object | null;
   iceServers?: RTCIceServer[];
   sdpHandler?: (
