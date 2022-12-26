@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-
 import {
   TAudioConfigs,
   TPlayerOptions,
@@ -7,7 +6,6 @@ import {
   TStreamItem,
   TVideoConfigs,
 } from '../typings/wowza-types';
-
 import { PeerConnection } from './webrtc/PeerConnection';
 import { SDPEnhancer } from './webrtc/SDPEnhancer';
 import { Wowza } from './wowza/wowza';
@@ -119,8 +117,8 @@ export class WowzaWebRTCPlayer extends EventEmitter {
 
     try {
       const mediaStream = this.mediaStream;
-      const pc = this.createPeerConnection();
       if (mediaStream !== null) {
+        const pc = this.createPeerConnection();
         pc.attachMediaStream(mediaStream);
 
         const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
