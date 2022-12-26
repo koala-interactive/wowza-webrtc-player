@@ -41,7 +41,7 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   private mediaStream: MediaStream | null = null;
   private pc: PeerConnection | null = null;
 
-  constructor(private video: HTMLVideoElement, options?: TPlayerOptions) {
+  constructor(options?: TPlayerOptions) {
     super();
 
     if (options) {
@@ -182,27 +182,5 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     this.pc = new PeerConnection(this.iceServers);
 
     return this.pc;
-  }
-
-  public attachStream(stream: MediaStream): void {
-    this.mediaStream = stream;
-
-    try {
-      const oldStream =
-        this.video.srcObject instanceof MediaStream && this.video.srcObject;
-      if (!oldStream || oldStream.id !== stream.id) {
-        this.video.srcObject = stream;
-      }
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      this.video.src = window.URL.createObjectURL(stream);
-    }
-
-    if (this.pc) {
-      this.pc.attachMediaStream(stream);
-    }
-
-    this.video.play();
   }
 }
