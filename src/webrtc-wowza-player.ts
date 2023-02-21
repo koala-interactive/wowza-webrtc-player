@@ -39,6 +39,8 @@ export class WowzaWebRTCPlayer extends EventEmitter {
   private mediaStream: MediaStream | null = null;
   private pc: PeerConnection | null = null;
 
+  private video: HTMLVideoElement | null = null;
+
   constructor(options?: TPlayerOptions) {
     super();
 
@@ -91,6 +93,10 @@ export class WowzaWebRTCPlayer extends EventEmitter {
     if (options.mediaStream) {
       this.mediaStream = options.mediaStream;
     }
+
+    if (options.video) {
+      this.video = options.video;
+    }
   }
 
   public stop(): void {
@@ -106,6 +112,67 @@ export class WowzaWebRTCPlayer extends EventEmitter {
 
   public getPeerConnection(): RTCPeerConnection | null {
     return this.pc ? this.pc.getPeerConnection() : null;
+  }
+
+  public async playRemote(options?: TPlayerOptions): Promise<void> {
+    if (options) {
+      this.setConfigurations(options);
+    }
+
+    const wowza = this.createWowzaInstance();
+
+    try {
+      const { sdp: sdpData } = await wowza.getOffer();
+      const pc = this.createPeerConnection();
+
+      pc.on('addstream', this.attachStream.bind(this));
+      await pc.setRemoteDescription(sdpData);
+
+      const description = await pc.createAnswer();
+      const enhancer = new SDPEnhancer(this.videoConfigs, this.audioConfigs);
+      const upgradedDescription = this.sdpHandler
+        ? this.sdpHandler(
+            description,
+            (sdp) => enhancer.transformPlay(sdp),
+            'play'
+          )
+        : enhancer.transformPlay(description);
+
+      await pc.setLocalDescription(upgradedDescription);
+
+      const { iceCandidates } = await wowza.sendResponse(upgradedDescription);
+      iceCandidates.forEach((ice) => {
+        pc.attachIceCandidate(ice);
+      });
+    } finally {
+      wowza.disconnect();
+    }
+  }
+
+  public attachStream(stream: MediaStream): void {
+    this.mediaStream = stream;
+
+    if (!this.video) {
+      throw new Error('Null pointer: this.video');
+    }
+
+    try {
+      const oldStream =
+        this.video.srcObject instanceof MediaStream && this.video.srcObject;
+      if (!oldStream || oldStream.id !== stream.id) {
+        this.video.srcObject = stream;
+      }
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      this.video.src = window.URL.createObjectURL(stream);
+    }
+
+    if (this.pc) {
+      this.pc.attachMediaStream(stream);
+    }
+
+    this.video.play();
   }
 
   public async publish(options?: TPlayerOptions): Promise<void> {

@@ -19,6 +19,7 @@ export interface TPlayerOptions {
     type: 'play' | 'publish'
   ) => RTCSessionDescriptionInit;
   secureToken?: TSecureToken;
+  video?: HTMLVideoElement;
 }
 
 export interface TVideoConfigs {
