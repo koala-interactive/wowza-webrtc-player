@@ -31,7 +31,10 @@
     "player",
     "streaming"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@types/sdp-transform": "^2.4.9",
+    "sdp-transform": "^2.14.2"
+  },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
     "@babel/core": "^7.7.5",
